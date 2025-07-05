@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Laboratorio de la Suerte</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      background-image: url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1950&q=80');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: white;
+    }
+    .melate-chip {
+      display: inline-block;
+      background: #ffecb3;
+      color: #212121;
+      padding: 10px 16px;
+      margin: 5px;
+      border-radius: 50px;
+      font-weight: bold;
+      box-shadow: 0 0 8px rgba(255,255,255,0.5);
+    }
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 0.9em;
+      color: #ddd;
+    }
+  </style>
+</head>
+<body>
+  <div class="container py-5 text-center">
+    <h1 class="mb-4">🔮 Laboratorio de la Suerte</h1>
+    <p>Haz clic en el botón y deja que las estrellas te guíen...</p>
+    <button class="btn btn-warning mb-4" onclick="generarCombinaciones()">✨ Generar Combinaciones</button>
+    <audio id="ding" src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.wav"></audio>
+    <div id="resultados" class="mb-4"></div>
+
+    <div class="card bg-dark text-white mt-4">
+      <div class="card-body">
+        <h4 class="card-title">📊 Estadísticas de la Suerte</h4>
+        <p><strong>Favoritos:</strong> 6, 7, 25</p>
+        <p><strong>Calientes:</strong> 18, 24, 29, 1, 15, 54</p>
+        <p><strong>Fríos:</strong> 10, 22, 31, 37, 48, 53</p>
+        <canvas id="statsChart" height="150"></canvas>
+      </div>
+    </div>
+
+    <footer>🧪 Kosmos Consultores, SA de CV, @ 2025 Enrique Chavez</footer>
+  </div>
+
+  <script>
+    const favoritos = [6, 7, 25];
+    const calientes = [18, 24, 29, 1, 15, 54];
+    const frios = [10, 22, 31, 37, 48, 53];
+    const ding = document.getElementById("ding");
+
+    function generarUnaCombinacion() {
+      let combo = [...favoritos];
+      combo.push(calientes[Math.floor(Math.random() * calientes.length)]);
+      combo.push(frios[Math.floor(Math.random() * frios.length)]);
+      while (combo.length < 6) {
+        let n = Math.floor(Math.random() * 56) + 1;
+        if (!combo.includes(n)) combo.push(n);
+      }
+      return combo.sort((a, b) => a - b);
+    }
+
+    function generarCombinaciones() {
+      const resultados = document.getElementById("resultados");
+      resultados.innerHTML = "";
+      ding.play(); // Reproduce el sonido
+      for (let i = 1; i <= 5; i++) {
+        const combo = generarUnaCombinacion();
+        const div = document.createElement("div");
+        div.className = "mb-2";
+        div.innerHTML = `<strong>Combinación ${i}:</strong> ` + combo.map(n => `<span class="melate-chip">${n}</span>`).join(" ");
+        resultados.appendChild(div);
+      }
+    }
+
+    const ctx = document.getElementById("statsChart").getContext("2d");
+    new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: ["Favoritos", "Calientes", "Fríos"],
+        datasets: [{
+          label: "Cantidad",
+          data: [favoritos.length, calientes.length, frios.length],
+          backgroundColor: ["#ffc107", "#dc3545", "#007bff"]
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
